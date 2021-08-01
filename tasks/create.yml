@@ -1,0 +1,33 @@
+---
+- name: check certificate existence
+  stat:
+    path: /etc/letsencrypt/live/{{ certbot_domains | first }}/cert.pem
+  register: certbot_cert
+
+- name: Copy file with owner and permission, using symbolic representation
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/certbot"
+    dest: "/etc/logrotate.d/certbot"
+    owner: root
+    group: root
+
+- name: template api file
+  template:
+    src: api.conf.j2
+    dest: "{{ certbot_api_file_destination }}"
+    owner: root
+    group: root
+    mode: 0600
+  when: certbot_api_file_destination
+
+
+- name: nginx start
+  become: yes
+  service:
+    name: nginx
+    state: started
+
+- name: create new certificate
+  command: "{{ certbot_create_command }}"
+  when: not certbot_cert.stat.exists
+

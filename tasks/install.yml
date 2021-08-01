@@ -1,0 +1,22 @@
+---
+
+- name: install python virtualenv
+  apt:
+    pkg:
+    - "python3-virtualenv"
+
+
+- name: Install requirements
+  pip: 
+    name:
+      - certbot
+      - certbot-nginx
+    virtualenv: "{{ certbot_virtualenv_dir }}"
+    virtualenv_python: python3
+
+- name: Install additionnal dependencies for wildcard cert
+  pip: 
+    name:
+      - "{{ certbot_wildcard_dependencie }}"
+    virtualenv: "{{ certbot_virtualenv_dir }}"
+    virtualenv_python: python3

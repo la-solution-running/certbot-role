@@ -1,0 +1,7 @@
+---
+- import_tasks: install.yml
+
+- include_tasks: create.yml
+
+- import_tasks: renew.yml
+  when: certbot_renew

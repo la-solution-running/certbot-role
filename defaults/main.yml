@@ -1,0 +1,39 @@
+---
+
+# install from source 
+certbot_virtualenv_dir: '/opt/certbot'
+certbot_script: '{{ certbot_virtualenv_dir }}/bin/certbot'
+certbot_repo: https://github.com/certbot/certbot.git
+certbot_version: master
+certbot_keep_updated: true
+certbot_dir: /opt/certbot
+certbot_api_file_destination: '{{ certbot_virtualenv_dir }}/.api-file'
+certbot_renew_user: root
+
+# create configuration
+certbot_email: ""
+certbot_domains: []
+# auto-renew cron configuration 
+certbot_renew: true
+
+certbot_renew_options: "--quiet"
+
+certbot_wildcard_dependencie: "certbot-dns-ovh" # can be  certbot-dns-ovh certbot-dns-gandi etc.
+  
+certbot_dns_service_api_config: [] # Params enter in template for DNS config from your provider, for example ovh: https://api.ovh.com/createToken/
+
+# certbot_dns_service_api_config: 
+#   dns_ovh_endpoint: ovh-eu
+#   dns_ovh_application_key: 0397f10e02f7d1f5a6d51aa6ce718608
+#   dns_ovh_application_secret: 2d4a0bf9b4c47d9efd1fd5493b48d4ba
+#   dns_ovh_consumer_key: e83853bd7ed0a01941974ca905226ed4
+
+certbot_create_cert_additionnal_params: '--dns-ovh --dns-ovh-credentials {{ certbot_api_file_destination }} --dns-ovh-propagation-seconds 240'
+
+
+certbot_create_command: >-
+  {{ certbot_script }} certonly --noninteractive --agree-tos
+  --email {{ certbot_email }}
+  --expand
+  {{ certbot_create_cert_additionnal_params | default('--nginx')  }}
+  {% for d in certbot_domains %} -d {{ d }}{% endfor %}

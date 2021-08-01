@@ -1,0 +1,7 @@
+---
+- name: add renewal cron
+  cron:
+    name: certbot renewal
+    job: "{{ certbot_script }} renew {{ certbot_renew_options }}"
+    special_time: monthly
+    user: "{{ certbot_renew_user }}"
